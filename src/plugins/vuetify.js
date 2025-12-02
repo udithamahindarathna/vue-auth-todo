@@ -16,4 +16,11 @@ export default createVuetify({
   theme: {
     defaultTheme: 'light',
   },
+  defaults: {
+    VCard: {
+      elevation: 3,
+      rounded: 'sm',
+      class: 'pa-2'
+    }
+  }
 })
