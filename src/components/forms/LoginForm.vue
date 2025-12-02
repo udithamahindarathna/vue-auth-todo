@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from "vue";
+import { useAuthStore } from "@/stores/authStore";
+
+const authStore = useAuthStore();
 
 const isPassword = ref(true);
 
@@ -28,7 +31,11 @@ const fieldRules = {
 </script>
 
 <template>
-  <v-form @submit.prevent class="d-flex flex-column ga-4 text-left">
+  <v-form
+    v-model="authStore.isLoginFormValid"
+    @submit.prevent="authStore.login"
+    class="d-flex flex-column ga-4 text-left"
+  >
     <v-text-field
       label="Username"
       placeholder="johndoe"
@@ -36,6 +43,7 @@ const fieldRules = {
       :rules="fieldRules.username"
       variant="outlined"
       rounded="sm"
+      v-model="authStore.loginFormData.username"
     ></v-text-field>
 
     <v-text-field
@@ -47,6 +55,7 @@ const fieldRules = {
       :rules="fieldRules.password"
       @click:append-inner="isPassword = !isPassword"
       rounded="sm"
+      v-model="authStore.loginFormData.password"
       required
     ></v-text-field>
     <v-btn
