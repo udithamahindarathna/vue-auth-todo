@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/authStore";
+import Alert from "@/components/Alert.vue"
 
 const authStore = useAuthStore();
 
@@ -32,12 +33,16 @@ const fieldRules = {
 
 <template>
   <v-form
+    :ref="el => authStore.loginForm = el"
     v-model="authStore.isLoginFormValid"
     @submit.prevent="authStore.login"
     class="d-flex flex-column ga-4 text-left"
   >
+    <Alert :text="authStore.error" type="error" v-if="authStore.error"/>
+
     <v-text-field
       label="Username"
+      :loading="authStore.isSubmitting"
       placeholder="johndoe"
       type="text"
       :rules="fieldRules.username"
@@ -49,6 +54,7 @@ const fieldRules = {
     <v-text-field
       label="Password"
       placeholder="your password"
+      :loading="authStore.isSubmitting"
       :append-inner-icon="isPassword ? 'mdi-eye' : 'mdi-eye-off-outline'"
       :type="isPassword ? 'password' : 'text'"
       variant="outlined"
@@ -65,6 +71,8 @@ const fieldRules = {
       :ripple="false"
       append-icon="mdi-arrow-right"
       color="primary"
+      :loading="authStore.isSubmitting"
+      :disabled="authStore.isSubmitting"
       block
       >Login
     </v-btn>

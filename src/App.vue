@@ -3,6 +3,11 @@ import Header from "./components/layout/Header.vue";
 import { useAuthStore } from "./stores/authStore";
 
 const authStore = useAuthStore();
+
+authStore.$subscribe((mutation, state) => {
+  localStorage.setItem('user', JSON.stringify(state.user))
+})
+
 </script>
 
 <template>

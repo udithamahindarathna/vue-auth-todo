@@ -1,44 +1,62 @@
+import { apiClient } from "@/utils/apiClient";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
+import router from "@/plugins/router";
 
 export const useAuthStore = defineStore('auth', () => {
-    const user = ref(localStorage.getItem('user') || null)
-    const isAuthenticated = computed(() => {
+
+    let user = ref(JSON.parse(localStorage.getItem('user')) || null)
+
+    let isAuthenticated = computed(() => {
         return !!user.value
     })
     const isLoginFormValid = ref(false)
+    let error = ref(null)
+    let isSubmitting = ref(false)
+    const loginForm = ref()
 
-    const loginFormData = reactive({
+    let loginFormData = reactive({
         username: "",
         password: ""
     })
 
     async function login() {
-        console.log("came to login")
-        const resp = await fetch('https://dummyjson.com/user/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: 'emilyssssssssssssssssssssssssssssssssssssss',
-                password: 'emilyspass',
-                expiresInMins: 30, // optional, defaults to 60
-            }),
-        })
+        error.value = null
+        isSubmitting.value = true
 
+        try {
+            const resp = await apiClient.post('/user/login', {
+                username: loginFormData.username,
+                password: loginFormData.password,
+                expiresInMins: 30,
+            }, {
+                headers: { 'Content-Type': 'application/json' },
+            })
+            user.value = resp.data
 
-        const data = await resp.json()
-        console.log("resp:", resp)
-        console.log("data:", data)
-        user.value = data
-
-        if (!resp.ok) {
-
+            resetLoginFormData()
+            return router.replace({ name: 'Home' })
+        } catch (err) {
+            console.log(err)
+            if (err.status === 400) {
+                error.value = "Invalid Credentials. Please try again"
+                return false
+            }
+            error.value = "Something went wrong, please try again"
             return false
+        } finally {
+            isSubmitting.value = false
         }
-
-
-        return true
     }
 
-    return { isAuthenticated, loginFormData, isLoginFormValid, login }
+    function resetLoginFormData() {
+        loginForm?.value?.reset()
+    }
+
+    function logout() {
+        user.value = null
+        return router.replace({ name: 'Login' })
+    }
+
+    return { isAuthenticated, loginFormData, isLoginFormValid, login, error, isSubmitting, user, logout, loginForm }
 })
