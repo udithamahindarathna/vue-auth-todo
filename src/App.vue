@@ -1,13 +1,20 @@
+<script setup>
+import Header from "./components/layout/Header.vue";
+import { useAuthStore } from "./stores/authStore";
+
+const authStore = useAuthStore();
+
+authStore.$subscribe((mutation, state) => {
+  localStorage.setItem('user', JSON.stringify(state.user))
+})
+
+</script>
+
 <template>
   <v-app>
+    <Header v-if="authStore.isAuthenticated" />
     <v-main>
-      <HelloWorld />
+      <router-view />
     </v-main>
-
-    <AppFooter />
   </v-app>
 </template>
-
-<script setup>
-  //
-</script>

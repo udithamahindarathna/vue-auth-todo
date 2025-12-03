@@ -14,6 +14,13 @@ import { createVuetify } from 'vuetify'
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   theme: {
-    defaultTheme: 'system',
+    defaultTheme: 'light',
   },
+  defaults: {
+    VCard: {
+      elevation: 3,
+      rounded: 'sm',
+      class: 'pa-2'
+    }
+  }
 })
